@@ -14,7 +14,14 @@ app.service('iBeaconService', function() {
     //ウォッチするビーコンリスト
     //例：mBaaS UUID = E2C56DB5-DFFB-48D2-B060-D0F5A71096E0
     var beacons = {
-        "YOUR_UUID": {icon: 'img/mbaas.png', rssi: -63, proximity: PROX_UNKNOWN, name: 'NIFTY CLOUD MOBILE BACKEND BEACON', number: '1', id: 'com.nifty.mbaas', major: 1, minor: 1},
+        "YOUR_UUID": {icon: 'img/mbaas.png', 
+                      rssi: -63, 
+                      proximity: PROX_UNKNOWN, 
+                      name: 'NIFTY CLOUD MOBILE BACKEND BEACON', 
+                      number: '1', 
+                      id: 'com.nifty.mbaas', 
+                      major: 1, 
+                      minor: 1},
         };
     this.beacons = beacons;
     
