@@ -65,12 +65,6 @@ app.service('iBeaconService', function() {
                 
                 delegate.didRangeBeaconsInRegion = function (pluginResult) {
                     var beaconData;
-                    if(!beaconData) {
-                        cordova.plugins.notification.local.schedule({
-                            id: 1,
-                            title: 'Beacon is detected'
-                        });
-                    }
                     beaconData = pluginResult.beacons[0];
                     var uuid = pluginResult.region.uuid.toUpperCase();
                     var id = pluginResult.region.identifier;
@@ -124,6 +118,13 @@ app.controller('TopPageCtrl', ['$scope', 'iBeaconService', function($scope, iBea
                     break;
             }
 
+            //Show notification
+            if (iBeaconService.currentBeaconUuid === null && beacon.rssi >-60) {
+                cordova.plugins.notification.local.schedule({
+                    id: 1,
+                    title: 'iBeaconを検出しました！クーポンを見ましょう！'
+                });
+            } 
             if (iBeaconService.currentBeaconUuid === null && beacon.rssi > -45) {
                 $scope.enterInfoPage(beacon.uuid, beacon.major, beacon.minor);
             }
