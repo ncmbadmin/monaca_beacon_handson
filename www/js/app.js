@@ -5,34 +5,43 @@ var PROX_IMMEDIATE = 'ProximityImmediate';
 
 var app = angular.module('myApp', ['onsen']);
 //ニフティクラウドmobile backendアプリID
-var ncmb_app_id = 'YOUR_APP_ID'; 
+var ncmb_app_id = 'YOURAPPID'; 
 
 app.service('iBeaconService', function() {
     this.currentBeaconUuid = null;
     this.onDetectCallback = function(){};
     
     //ウォッチするビーコンリスト
-    //例：mBaaS UUID = E2C56DB5-DFFB-48D2-B060-D0F5A71096E0
     var beacons = {
-        "E2C56DB5-DFFB-48D2-B060-D0F5A71096E0": {icon: 'img/mbaas.png', 
-                      rssi: -63, 
-                      proximity: PROX_UNKNOWN, 
-                      name: 'NIFTY CLOUD MOBILE BACKEND BEACON', 
-                      number: '1', 
-                      id: 'com.nifty.mbaas', 
-                      major: 1, 
-                      minor: 1},
-        };
+                      'com.nifty.mbaas1': {
+                          uuid: "E2C56DB5-DFFB-48D2-B060-D0F5A71096E0",
+                          name: "mbaas beacon1",
+                          icon: 'img/mbaas.png', 
+                          rssi: -63, 
+                          proximity: PROX_UNKNOWN, 
+                          major: 1022, 
+                          minor: 1
+                      },
+                      'com.nifty.mbaas2': {
+                          uuid: "E2C56DB5-DFFB-48D2-B060-D0F5A71096E0",
+                          name: "mbaas beacon2",
+                          icon: 'img/logo.png', 
+                          rssi: -63, 
+                          proximity: PROX_UNKNOWN, 
+                          major: 1022, 
+                          minor: 2
+                      }
+                    };
     this.beacons = beacons;
     
     createBeacons = function() {
         var result = [];
         try {
             angular.forEach(beacons, function(value, key) {
-                result.push(new cordova.plugins.locationManager.BeaconRegion(value.id, key));
+                result.push(new cordova.plugins.locationManager.BeaconRegion(key, value.uuid, value.major, value.minor));
             });
         } catch (e) {
-            console.log('createBeacon err: ' + e);
+            alert('createBeacon err: ' + e);
         }
         return result;
     };
@@ -40,12 +49,10 @@ app.service('iBeaconService', function() {
     this.watchBeacons = function(callback){
         document.addEventListener("deviceready", function(){
             var beacons = createBeacons();
-            
             try {    
                 var delegate = new cordova.plugins.locationManager.Delegate();
 
                 delegate.didDetermineStateForRegion = function (pluginResult) {
-                
                     console.log('[DOM] didDetermineStateForRegion: ' + JSON.stringify(pluginResult));
                     cordova.plugins.locationManager.appendToDeviceLog('[DOM] didDetermineStateForRegion: '
                         + JSON.stringify(pluginResult));
@@ -57,13 +64,14 @@ app.service('iBeaconService', function() {
                 };
                 
                 delegate.didRangeBeaconsInRegion = function (pluginResult) {
-                    var beaconData = pluginResult.beacons[0];
+                    var beaconData;
+                    beaconData = pluginResult.beacons[0];
                     var uuid = pluginResult.region.uuid.toUpperCase();
+                    var id = pluginResult.region.identifier;
                     if (!beaconData || !uuid) {
                         return;
                     }
-                    
-                    callback(beaconData, uuid);
+                    callback(beaconData, id);
                     console.log('[DOM] didRangeBeaconsInRegion: ' + JSON.stringify(pluginResult));
                 };
                 
@@ -78,36 +86,19 @@ app.service('iBeaconService', function() {
                 });
                 
             } catch (e) {
-                console.log('Delegate err: ' + e);   
+                alert('Delegate err: ' + e);   
             }
         }, false);
     };
 });
 
-app.controller('InfoPageCtrl', ['$scope', 'iBeaconService', function($scope, iBeaconService) {
-    $scope.beacon = iBeaconService.beacons[iBeaconService.currentBeaconUuid];
-    $scope.beaconUuid = iBeaconService.currentBeaconUuid;
-    
-    $scope.showDetailCoupon = function() {
-        var selectedBeacon = iBeaconService.beacons[iBeaconService.currentBeaconUuid];
-        $scope.ons.navigator.pushPage('coupon-page.html', selectedBeacon);
-    }
-}]);
- 
-app.controller('CouponPageCtrl', ['$scope', 'iBeaconService', function($scope, iBeaconService) {
-    $scope.beacon = iBeaconService.beacons[iBeaconService.currentBeaconUuid];
-    $scope.beaconUuid = iBeaconService.currentBeaconUuid;
-    //ニフティクラウドmobile backendサーバーからクーポン情報を取得
-    //こちらにコードを追加
-}]);
-
 app.controller('TopPageCtrl', ['$scope', 'iBeaconService', function($scope, iBeaconService) {        
-    
+    iBeaconService.currentBeaconUuid = null;
     $scope.beacons = iBeaconService.beacons;
     
-    var callback = function(deviceData, uuid)
+    var callback = function(deviceData, id)
     {
-        var beacon = $scope.beacons[uuid];
+        var beacon = $scope.beacons[id];
         $scope.$apply(function()
         {
             beacon.rssi = deviceData.rssi;
@@ -127,20 +118,53 @@ app.controller('TopPageCtrl', ['$scope', 'iBeaconService', function($scope, iBea
                     break;
             }
 
+            //Show notification
+            if (iBeaconService.currentBeaconUuid === null && beacon.rssi >-60) {
+                cordova.plugins.notification.local.schedule({
+                    id: 1,
+                    title: 'iBeaconを検出しました！クーポンを見ましょう！'
+                });
+            } 
             if (iBeaconService.currentBeaconUuid === null && beacon.rssi > -45) {
-                $scope.enterInfoPage(uuid);
+                $scope.enterInfoPage(beacon.uuid, beacon.major, beacon.minor);
             }
         });
     };
     iBeaconService.watchBeacons(callback);
 
-    $scope.enterInfoPage = function(currentUuid) {
+    $scope.enterInfoPage = function(currentUuid, currentMajorId, currentMinorId) {
         iBeaconService.currentBeaconUuid = currentUuid;
-        $scope.ons.navigator.pushPage('info-page.html');
+        iBeaconService.currentMajorId = currentMajorId;
+        iBeaconService.currentMinorId = currentMinorId;
+        $scope.ons.navigator.pushPage('coupon-page.html');
         $scope.ons.navigator.on("prepop", function() {
         	iBeaconService.currentBeaconUuid = null;
         });
     };
-    
+
 }]);
 
+app.controller('CouponPageCtrl', ['$scope', 'iBeaconService', function($scope, iBeaconService) {
+    //ニフティクラウドmobile backendサーバーからクーポン情報を取得
+    NCMB.initialize("YOUR_APPKEY", "YOUR_CLIENTKEY");
+    var Beacon = NCMB.Object.extend("Beacon");
+    var query = new NCMB.Query(Beacon);
+    query.equalTo("uuid", iBeaconService.currentBeaconUuid);
+    query.equalTo("major", iBeaconService.currentMajorId);
+    query.equalTo("minor", iBeaconService.currentMinorId);
+    query.find({
+       success: function(results) {
+          //検索結果からクーポンファイル名を抽出し、ファイルストアに保存しているファイルURL生成
+          //公開ファイルURL：http://mb.cloud.nifty.com/doc/current/rest/filestore/publicFileGet.html
+          var coupon_lst = results[0].get("coupon"); 
+          var coupon_files = [];
+          for (var j = 0; j < coupon_lst.length; j++) {
+              coupon_files.push({'url':'https://mb.api.cloud.nifty.com/2013-09-01/applications/'+ ncmb_app_id +'/publicFiles/' + coupon_lst[j]});
+          }
+          $scope.coupons = coupon_files; 
+       },
+       error: function(error) {
+          // エラー
+       }
+    });
+}]);
