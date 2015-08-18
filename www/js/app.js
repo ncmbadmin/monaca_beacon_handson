@@ -146,25 +146,4 @@ app.controller('TopPageCtrl', ['$scope', 'iBeaconService', function($scope, iBea
 
 app.controller('CouponPageCtrl', ['$scope', 'iBeaconService', function($scope, iBeaconService) {
     //ニフティクラウドmobile backendサーバーからクーポン情報を取得
-    NCMB.initialize("YOUR_APPKEY", "YOUR_CLIENTKEY");
-    var Beacon = NCMB.Object.extend("Beacon");
-    var query = new NCMB.Query(Beacon);
-    query.equalTo("uuid", iBeaconService.currentBeaconUuid);
-    query.equalTo("major", iBeaconService.currentMajorId);
-    query.equalTo("minor", iBeaconService.currentMinorId);
-    query.find({
-       success: function(results) {
-          //検索結果からクーポンファイル名を抽出し、ファイルストアに保存しているファイルURL生成
-          //公開ファイルURL：http://mb.cloud.nifty.com/doc/current/rest/filestore/publicFileGet.html
-          var coupon_lst = results[0].get("coupon"); 
-          var coupon_files = [];
-          for (var j = 0; j < coupon_lst.length; j++) {
-              coupon_files.push({'url':'https://mb.api.cloud.nifty.com/2013-09-01/applications/'+ ncmb_app_id +'/publicFiles/' + coupon_lst[j]});
-          }
-          $scope.coupons = coupon_files; 
-       },
-       error: function(error) {
-          // エラー
-       }
-    });
 }]);
