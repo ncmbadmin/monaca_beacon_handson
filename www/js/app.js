@@ -146,4 +146,5 @@ app.controller('TopPageCtrl', ['$scope', 'iBeaconService', function($scope, iBea
 
 app.controller('CouponPageCtrl', ['$scope', 'iBeaconService', function($scope, iBeaconService) {
     //ニフティクラウドmobile backendサーバーからクーポン情報を取得
+    //ここにコード追加
 }]);
