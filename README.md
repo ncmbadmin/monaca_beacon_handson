@@ -8,8 +8,8 @@ MonacaとMobile backendを利用し、O2Oアプリをデモするアプリ
 
 ## License
 
+```
  * Copyright (c) 2013, NIFTY Corporation. All rights reserved.
- * The NCMB JavaScript SDK is freely distributable under the MIT license.
  *
  * Created based on the following Javascript libraries.
  * 
@@ -32,3 +32,4 @@ MonacaとMobile backendを利用し、O2Oアプリをデモするアプリ
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH 
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
  */
+ ```
