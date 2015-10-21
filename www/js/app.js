@@ -14,22 +14,22 @@ app.service('iBeaconService', function() {
     //ウォッチするビーコンリスト
     var beacons = {
                       'com.nifty.mbaas1': {
-                          uuid: "E2C56DB5-DFFB-48D2-B060-D0F5A71096E0",
+                          uuid: "B0FC4601-14A6-43A1-ABCD-CB9CFDDB4013",
                           name: "mbaas beacon1",
                           icon: 'img/mbaas.png', 
                           rssi: -63, 
                           proximity: PROX_UNKNOWN, 
-                          major: 1022, 
-                          minor: 1
+                          major: 2, 
+                          minor: 47473
                       },
                       'com.nifty.mbaas2': {
-                          uuid: "E2C56DB5-DFFB-48D2-B060-D0F5A71096E0",
+                          uuid: "B0FC4601-14A6-43A1-ABCD-CB9CFDDB4013",
                           name: "mbaas beacon2",
                           icon: 'img/logo.png', 
                           rssi: -63, 
                           proximity: PROX_UNKNOWN, 
-                          major: 1022, 
-                          minor: 2
+                          major: 2, 
+                          minor: 47487
                       }
                     };
     this.beacons = beacons;
