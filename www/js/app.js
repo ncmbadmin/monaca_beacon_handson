@@ -119,13 +119,13 @@ app.controller('TopPageCtrl', ['$scope', 'iBeaconService', function($scope, iBea
             }
 
             //Show notification
-            if (iBeaconService.currentBeaconUuid === null && beacon.rssi >-60) {
+            if (iBeaconService.currentBeaconUuid === null && beacon.rssi >-80) {
                 cordova.plugins.notification.local.schedule({
                     id: 1,
                     title: 'iBeaconを検出しました！クーポンを見ましょう！'
                 });
             } 
-            if (iBeaconService.currentBeaconUuid === null && beacon.rssi > -45) {
+            if (iBeaconService.currentBeaconUuid === null && beacon.rssi > -65) {
                 $scope.enterInfoPage(beacon.uuid, beacon.major, beacon.minor);
             }
         });
