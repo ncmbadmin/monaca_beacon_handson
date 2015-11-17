@@ -29,7 +29,7 @@ app.service('iBeaconService', function() {
                           rssi: -63, 
                           proximity: PROX_UNKNOWN, 
                           major: 2, 
-                          minor: 47487
+                          minor: 47490
                       }
                     };
     this.beacons = beacons;
