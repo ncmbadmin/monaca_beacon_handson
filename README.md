@@ -9,7 +9,7 @@ MonacaとMobile backendを利用し、O2Oアプリをデモするアプリ
 ## License
 
 ```
- * Copyright (c) 2013, NIFTY Corporation. All rights reserved.
+ * Copyright (c) 2017, FUJITSU CLOUD TECHNOLOGIES LIMITED. All rights reserved.
  *
  * Created based on the following Javascript libraries.
  * 
